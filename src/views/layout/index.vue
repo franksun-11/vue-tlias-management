@@ -26,7 +26,7 @@
         <!-- 左侧菜单 -->
         <el-aside width="200px" class="aside">
           <!-- 左侧菜单栏 -->
-          <el-menu>
+          <el-menu router>
             <!-- 首页菜单 -->
             <el-menu-item index="/index">
               <el-icon>
@@ -99,7 +99,7 @@
         </el-aside>
 
         <el-main>
-          右侧核心展示区域
+          <router-view></router-view>
         </el-main>
       </el-container>
 
