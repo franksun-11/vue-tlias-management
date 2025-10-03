@@ -1,16 +1,23 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
-
+import { queryAllApi } from '@/api/dept' 
 
 // 查询函数
 const search = async () => {
-    const result = await axios.get('https://m1.apifoxmock.com/m1/7116608-6839408-6228127/depts?apifoxApiId=357935821').then()
-    if(result.data.code){ // js当中隐式类型转换 0 - false 其他数字 - true; null/undefined - false; 非空字符串 - true; 空字符串 - false
-      deptList.value = result.data.data
+    // const result = await axios.get('https://m1.apifoxmock.com/m1/7116608-6839408-6228127/depts?apifoxApiId=357935821').then()
+    // if(result.data.code){ // js当中隐式类型转换 0 - false 其他数字 - true; null/undefined - false; 非空字符串 - true; 空字符串 - false
+    //   deptList.value = result.data.data
+    // } else {
+    //   console.log(result.data.msg)
+    // }
+    const result = await queryAllApi();
+    if(result.code){
+      deptList.value = result.data
     } else {
-      console.log(result.data.msg)
+      console.log(result.msg)
     }
+
 }
 
 //钩子函数
