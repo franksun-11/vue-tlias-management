@@ -2,7 +2,7 @@ import axios from 'axios'
 
 //创建axios实例对象
 const request = axios.create({
-  baseURL: 'https://m1.apifoxmock.com/m1/7116608-6839408-6228127',
+  baseURL: '/api',
   timeout: 600000,
   params: {
     apifoxApiId: '357935821'
