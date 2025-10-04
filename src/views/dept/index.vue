@@ -32,28 +32,52 @@ const deptList = ref([])
 
 // dialog对话框
 const dialogFormVisible = ref(false);
-const dept = ref({name: ''});
-const formTitle = ref('')
+const dept = ref({ name: '' });
+const formTitle = ref('');
+const deptFormRef = ref();
 
+// 保存部门
 const save = async () => {
-  const result = await addApi(dept.value);
-  if (result.code) {
-    // 1.提示信息
-    ElMessage.success('操作成功');
-    // 2.关闭对话框
-    dialogFormVisible.value = false;
-    // 3.查询表格
-    search();
-  } else { //失败
-    ElMessage.error(result.msg);
-  }
-
+  // 表单检验
+  if (!deptFormRef.value) return;
+  deptFormRef.value.validate(async (valid) => { //valid 表示是否通过表单校验
+    if (valid)  {  //通过
+      const result = await addApi(dept.value);
+      if (result.code) {
+        // 1.提示信息
+        ElMessage.success('操作成功');
+        // 2.关闭对话框
+        dialogFormVisible.value = false;
+        // 3.查询表格
+        search();
+      } else { //失败
+        ElMessage.error(result.msg);
+      }
+    }else { //未通过
+      ElMessage.error('表单校验失败');
+      return false;
+    }
+  })
 }
 
+
+// 表单校验相关
+const rules = ref({
+  name: [
+    { required: true, message: '请输入部门名称！', trigger: 'blur' },
+    { min: 2, max: 10, message: '部门名称长度须在2-10位之间！', trigger: 'blur' }
+  ]
+})
+
+// 新增部门
 const addDept = () => {
   dialogFormVisible.value = true;
   formTitle.value = '新增部门';
-  dept.value = {name: ''};
+  dept.value = { name: '' };
+  // 重置表单检验规则
+  if (deptFormRef.value) {
+    deptFormRef.value.clearValidate();
+  } 
 }
 </script>
 
@@ -83,8 +107,8 @@ const addDept = () => {
 
   <!-- dialog对话框组件 -->
   <el-dialog v-model="dialogFormVisible" :title="formTitle" width="500">
-    <el-form :model="dept">
-      <el-form-item label="部门名称" label-width="80px">
+    <el-form :model="dept" :rules="rules" ref="deptFormRef">
+      <el-form-item label="部门名称" label-width="80px" prop="name">
         <el-input v-model="dept.name" />
       </el-form-item>
     </el-form>
