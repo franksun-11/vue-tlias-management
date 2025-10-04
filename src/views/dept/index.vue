@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import { queryAllApi, addApi, queryByIdApi, updateApi} from '@/api/dept';
-import { ElMessage } from 'element-plus';
+import { queryAllApi, addApi, queryByIdApi, updateApi, deleteByIdApi } from '@/api/dept';
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 查询函数
 const search = async () => {
@@ -42,24 +42,43 @@ const edit = async (id) => {
   // 重置表单检验规则
   if (deptFormRef.value) {
     deptFormRef.value.resetFields();
-  } 
+  }
   const result = await queryByIdApi(id);
-  if(result.code) {
+  if (result.code) {
     dialogFormVisible.value = true;
     dept.value = result.data;
   }
 }
+
+const deleteById = async (id) => {
+  // 弹出确认对话框
+  ElMessageBox.confirm('您确认删除该部门吗？', '提示',
+  {confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning'})
+    .then(async () => { // 确认
+      const result = await deleteByIdApi(id);
+      if (result.code) {
+        ElMessage.success('删除成功');
+        search();
+      }else {
+        ElMessage.error(result.msg);
+      }
+    })
+    .catch(() => { // 取消
+      ElMessage.info('您已取消删除');
+    })
+}
+
 // 保存部门
 const save = async () => {
   // 表单检验
   if (!deptFormRef.value) return;
   deptFormRef.value.validate(async (valid) => { //valid 表示是否通过表单校验
-    if (valid)  {
+    if (valid) {
       //通过
       let result;
-      if(dept.value.id) { //修改
+      if (dept.value.id) { //修改
         result = await updateApi(dept.value);
-      }else{ //新增
+      } else { //新增
         result = await addApi(dept.value);
       }
 
@@ -73,7 +92,7 @@ const save = async () => {
       } else { //失败
         ElMessage.error(result.msg);
       }
-    }else { //未通过
+    } else { //未通过
       ElMessage.error('表单校验失败');
       return false;
     }
@@ -97,7 +116,7 @@ const addDept = () => {
   // 重置表单检验规则
   if (deptFormRef.value) {
     deptFormRef.value.resetFields();
-  } 
+  }
 }
 </script>
 
@@ -117,7 +136,7 @@ const addDept = () => {
           <el-button type="primary" size="small" @click='edit(scope.row.id)'><el-icon>
               <EditPen />
             </el-icon>编辑</el-button>
-          <el-button type="danger" size="small"><el-icon>
+          <el-button type="danger" size="small" @click='deleteById(scope.row.id)'><el-icon>
               <Delete />
             </el-icon>删除</el-button>
         </template>

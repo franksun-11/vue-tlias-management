@@ -9,3 +9,4 @@ export const queryByIdApi = (id) => request.get(`depts/${id}`);
 //修改部门
 export const updateApi = (dept) => request.put('depts', dept);
 //删除部门
+export const deleteByIdApi = (id) => request.delete(`depts?id=${id}`);
